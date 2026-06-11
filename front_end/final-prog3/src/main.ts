@@ -6,6 +6,7 @@ import { OrdersPage } from './pages/client/orders/index';
 import { AdminDashboardPage } from './pages/admin/adminHome/index';
 import { AdminCategoriesPage } from './pages/admin/categories/index';
 import { AdminProductsPage } from './pages/admin/products/index';
+import { AdminOrdersPage } from './pages/admin/orders/index';
 
 function init() {
   const app = document.querySelector<HTMLDivElement>('#app');
@@ -36,9 +37,8 @@ function init() {
     const productsPage = new AdminProductsPage(app);
     productsPage.render();
   } else if (path === '/admin/orders' || path === '/admin/orders/') {
-    // Temporal: mostrar dashboard hasta que creemos la página de pedidos
-    const adminPage = new AdminDashboardPage(app);
-    adminPage.render();
+    const ordersPage = new AdminOrdersPage(app);
+    ordersPage.render();
   } else if (path.startsWith('/product/')) {
     const productId = parseInt(path.split('/')[2]);
     if (!isNaN(productId)) {

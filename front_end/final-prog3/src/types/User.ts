@@ -16,5 +16,6 @@ export interface UserSession {
   nombre: string;
   apellido: string;
   mail: string;
+  celular: string;
   rol: Rol;
 }
