@@ -67,13 +67,24 @@ export class HomePage {
         <main class="home-main">
           <div class="home-header">
             <h1>🍔 Food Store</h1>
-            <div class="search-box">
-              <input type="text" id="search-input" placeholder="Buscar productos..." value="${this.searchTerm}">
+            <div class="header-buttons">
+              <button id="orders-link" class="nav-btn" title="Mis Pedidos">
+                📋 <span class="nav-text">Mis Pedidos</span>
+              </button>
+              <div class="cart-badge" id="cart-button">
+                <button class="nav-btn" title="Carrito">
+                  🛒 <span class="nav-text">Carrito</span>
+                </button>
+                ${this.cartCount > 0 ? `<span class="cart-count">${this.cartCount}</span>` : ''}
+              </div>
+              <button id="logout-btn" class="nav-btn" title="Cerrar Sesión">
+                🚪 <span class="nav-text">Salir</span>
+              </button>
             </div>
-            <div class="cart-badge" id="cart-button">
-              <span class="cart-icon">🛒</span>
-              ${this.cartCount > 0 ? `<span class="cart-count">${this.cartCount}</span>` : ''}
-            </div>
+          </div>
+          
+          <div class="search-box">
+            <input type="text" id="search-input" placeholder="Buscar productos..." value="${this.searchTerm}">
           </div>
           
           <div class="results-count">
@@ -163,6 +174,24 @@ export class HomePage {
     if (cartButton) {
       cartButton.addEventListener('click', () => {
         window.location.href = '/cart';
+      });
+    }
+    
+    // Botón Mis Pedidos
+    const ordersLink = document.getElementById('orders-link');
+    if (ordersLink) {
+      ordersLink.addEventListener('click', () => {
+        window.location.href = '/orders';
+      });
+    }
+    
+    // Botón Cerrar Sesión
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('food_store_session');
+        localStorage.removeItem('food_store_cart');
+        window.location.href = '/';
       });
     }
   }
