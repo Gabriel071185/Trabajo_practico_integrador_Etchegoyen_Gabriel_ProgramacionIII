@@ -34,38 +34,92 @@ Food Store es un sistema de gestión de pedidos de comida que consta de dos part
 
 ## 📁 Estructura del Proyecto
 Food Store - Sistema de gestión de pedidos de comida/
+│
+├── README.md
+│
+├── data/ # Base de datos H2
+│ └── jpa_db.mv.db
+│
 ├── back_end/
 │ └── food_store/
-│ ├── src/main/java/com/tp/jpa/
-│ │ ├── Main.java
-│ │ ├── model/
-│ │ ├── repository/
-│ │ └── util/
-│ ├── src/main/resources/META-INF/
-│ │ └── persistence.xml
 │ ├── build.gradle
-│ └── gradlew
-├── front_end/
-│ └── final-prog3/
-│ ├── src/
-│ │ ├── pages/
-│ │ ├── types/
-│ │ ├── utils/
-│ │ ├── main.ts
-│ │ └── assets
-│ ├── public/data/
-│ │ ├── categorias.json
-│ │ ├── productos.json
-│ │ ├── usuarios.json
-│ │ └── pedidos.json
-│ ├── index.html
-│ ├── package.json
-│ └── tsconfig.json
-├── data/
-│ └── jpa_db.mv.db (base de datos H2)
-└── README.md
-
-text
+│ ├── gradlew
+│ ├── gradlew.bat
+│ ├── settings.gradle
+│ │
+│ ├── src/main/
+│ │ ├── java/com/tp/jpa/
+│ │ │ ├── Main.java
+│ │ │ ├── model/
+│ │ │ │ ├── Base.java
+│ │ │ │ ├── Calculable.java
+│ │ │ │ ├── Categoria.java
+│ │ │ │ ├── DetallePedido.java
+│ │ │ │ ├── Pedido.java
+│ │ │ │ ├── Producto.java
+│ │ │ │ ├── Usuario.java
+│ │ │ │ └── enums/
+│ │ │ │ ├── EstadoPedido.java
+│ │ │ │ ├── FormaPago.java
+│ │ │ │ └── Rol.java
+│ │ │ ├── repository/
+│ │ │ │ ├── BaseRepository.java
+│ │ │ │ ├── CategoriaRepository.java
+│ │ │ │ ├── PedidoRepository.java
+│ │ │ │ ├── ProductoRepository.java
+│ │ │ │ └── UsuarioRepository.java
+│ │ │ └── util/
+│ │ │ └── JPAUtil.java
+│ │ │
+│ │ └── resources/META-INF/
+│ │ └── persistence.xml
+│ │
+│ └── data/
+│ └── jpa_db.mv.db
+│
+└── front_end/
+└── final-prog3/
+├── index.html
+├── package.json
+├── tsconfig.json
+│
+├── public/data/
+│ ├── categorias.json
+│ ├── pedidos.json
+│ ├── productos.json
+│ └── usuarios.json
+│
+└── src/
+├── main.ts
+├── assets/styles/
+│ ├── admin.css
+│ ├── cart.css
+│ ├── home.css
+│ ├── login.css
+│ ├── orders.css
+│ └── productDetail.css
+├── pages/
+│ ├── admin/
+│ │ ├── adminHome/index.ts
+│ │ ├── categories/index.ts
+│ │ ├── orders/index.ts
+│ │ └── products/index.ts
+│ ├── auth/login/index.ts
+│ ├── client/orders/index.ts
+│ └── store/
+│ ├── cart/index.ts
+│ ├── home/index.ts
+│ └── productDetail/index.ts
+├── types/
+│ ├── CartItem.ts
+│ ├── Category.ts
+│ ├── Order.ts
+│ ├── Product.ts
+│ ├── User.ts
+│ └── index.ts
+└── utils/
+├── api.ts
+└── auth.ts
 
 ---
 
