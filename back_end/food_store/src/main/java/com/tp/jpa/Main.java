@@ -20,10 +20,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Scanner;
 
-/**
- * Clase principal: menú de consola del sistema Food Store.
- * Orden de uso natural: Categorías -> Productos -> Usuarios -> Pedidos.
- */
 public class Main {
 
     private static final Scanner sc = new Scanner(System.in);
@@ -46,6 +42,10 @@ public class Main {
             System.out.println("0. Salir");
             System.out.print("Opción: ");
             String op = sc.nextLine().trim();
+            if (op.isEmpty()) {
+                System.out.println("Opción inválida.");
+                continue;
+            }
             switch (op) {
                 case "1": menuCategorias(); break;
                 case "2": menuProductos(); break;
@@ -60,7 +60,24 @@ public class Main {
         System.out.println("Aplicación finalizada.");
     }
 
-    // ── Submenú Categorías ─────────────────────────────────────────────────
+    // ==================== MÉTODO AUXILIAR PARA LEER ID ====================
+
+    private static Long leerId(String mensaje) {
+        System.out.print(mensaje);
+        String input = sc.nextLine().trim();
+        if (input.isEmpty()) {
+            System.out.println("Operación cancelada.");
+            return null;
+        }
+        try {
+            return Long.parseLong(input);
+        } catch (NumberFormatException e) {
+            System.out.println("ID inválido. Debe ingresar un número.");
+            return null;
+        }
+    }
+
+    // ==================== SUBMENÚ CATEGORÍAS ====================
 
     private static void menuCategorias() {
         boolean volver = false;
@@ -73,6 +90,10 @@ public class Main {
             System.out.println("0. Volver");
             System.out.print("Opción: ");
             String op = sc.nextLine().trim();
+            if (op.isEmpty()) {
+                System.out.println("Opción inválida.");
+                continue;
+            }
             switch (op) {
                 case "1": altaCategoria(); break;
                 case "2": modificarCategoria(); break;
@@ -105,8 +126,9 @@ public class Main {
 
     private static void modificarCategoria() {
         listarCategorias();
-        System.out.print("ID de categoría a modificar: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID de categoría a modificar: ");
+        if (id == null) return;
+        
         Optional<Categoria> opt = categoriaRepo.buscarPorId(id);
         if (opt.isEmpty()) {
             System.out.println("Categoría no encontrada.");
@@ -131,8 +153,9 @@ public class Main {
 
     private static void bajaCategoria() {
         listarCategorias();
-        System.out.print("ID de categoría a eliminar: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID de categoría a eliminar: ");
+        if (id == null) return;
+        
         boolean eliminado = categoriaRepo.eliminarLogico(id);
         if (eliminado) {
             System.out.println("Categoría eliminada (baja lógica).");
@@ -153,7 +176,7 @@ public class Main {
         }
     }
 
-    // ── Submenú Productos ─────────────────────────────────────────────────
+    // ==================== SUBMENÚ PRODUCTOS ====================
 
     private static void menuProductos() {
         boolean volver = false;
@@ -166,6 +189,10 @@ public class Main {
             System.out.println("0. Volver");
             System.out.print("Opción: ");
             String op = sc.nextLine().trim();
+            if (op.isEmpty()) {
+                System.out.println("Opción inválida.");
+                continue;
+            }
             switch (op) {
                 case "1": altaProducto(); break;
                 case "2": modificarProducto(); break;
@@ -179,8 +206,9 @@ public class Main {
 
     private static void altaProducto() {
         listarCategorias();
-        System.out.print("ID de categoría: ");
-        Long catId = Long.parseLong(sc.nextLine().trim());
+        Long catId = leerId("ID de categoría: ");
+        if (catId == null) return;
+        
         Optional<Categoria> optCat = categoriaRepo.buscarPorId(catId);
         if (optCat.isEmpty()) {
             System.out.println("Categoría no encontrada.");
@@ -199,14 +227,36 @@ public class Main {
         String descripcion = sc.nextLine().trim();
 
         System.out.print("Precio: ");
-        double precio = Double.parseDouble(sc.nextLine().trim());
+        String precioStr = sc.nextLine().trim();
+        if (precioStr.isEmpty()) {
+            System.out.println("Error: el precio es obligatorio.");
+            return;
+        }
+        double precio;
+        try {
+            precio = Double.parseDouble(precioStr);
+        } catch (NumberFormatException e) {
+            System.out.println("Error: precio inválido.");
+            return;
+        }
         if (precio <= 0) {
             System.out.println("Error: el precio debe ser mayor a 0.");
             return;
         }
 
         System.out.print("Stock: ");
-        int stock = Integer.parseInt(sc.nextLine().trim());
+        String stockStr = sc.nextLine().trim();
+        if (stockStr.isEmpty()) {
+            System.out.println("Error: el stock es obligatorio.");
+            return;
+        }
+        int stock;
+        try {
+            stock = Integer.parseInt(stockStr);
+        } catch (NumberFormatException e) {
+            System.out.println("Error: stock inválido.");
+            return;
+        }
         if (stock < 0) {
             System.out.println("Error: el stock no puede ser negativo.");
             return;
@@ -235,8 +285,9 @@ public class Main {
 
     private static void modificarProducto() {
         listarProductos();
-        System.out.print("ID de producto a modificar: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID de producto a modificar: ");
+        if (id == null) return;
+        
         Optional<Producto> opt = productoRepo.buscarPorId(id);
         if (opt.isEmpty()) {
             System.out.println("Producto no encontrado.");
@@ -255,23 +306,33 @@ public class Main {
         System.out.print("Nuevo precio (Enter para mantener): ");
         String precioStr = sc.nextLine().trim();
         if (!precioStr.isEmpty()) {
-            double precio = Double.parseDouble(precioStr);
-            if (precio <= 0) {
-                System.out.println("Error: el precio debe ser mayor a 0.");
+            try {
+                double precio = Double.parseDouble(precioStr);
+                if (precio <= 0) {
+                    System.out.println("Error: el precio debe ser mayor a 0.");
+                    return;
+                }
+                prod.setPrecio(precio);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: precio inválido.");
                 return;
             }
-            prod.setPrecio(precio);
         }
 
         System.out.print("Nuevo stock (Enter para mantener): ");
         String stockStr = sc.nextLine().trim();
         if (!stockStr.isEmpty()) {
-            int stock = Integer.parseInt(stockStr);
-            if (stock < 0) {
-                System.out.println("Error: el stock no puede ser negativo.");
+            try {
+                int stock = Integer.parseInt(stockStr);
+                if (stock < 0) {
+                    System.out.println("Error: el stock no puede ser negativo.");
+                    return;
+                }
+                prod.setStock(stock);
+            } catch (NumberFormatException e) {
+                System.out.println("Error: stock inválido.");
                 return;
             }
-            prod.setStock(stock);
         }
 
         productoRepo.guardar(prod);
@@ -280,8 +341,9 @@ public class Main {
 
     private static void bajaProducto() {
         listarProductos();
-        System.out.print("ID de producto a eliminar: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID de producto a eliminar: ");
+        if (id == null) return;
+        
         boolean eliminado = productoRepo.eliminarLogico(id);
         if (eliminado) {
             System.out.println("Producto eliminado (baja lógica).");
@@ -302,7 +364,7 @@ public class Main {
         }
     }
 
-    // ── Submenú Usuarios ─────────────────────────────────────────────────
+    // ==================== SUBMENÚ USUARIOS ====================
 
     private static void menuUsuarios() {
         boolean volver = false;
@@ -316,6 +378,10 @@ public class Main {
             System.out.println("0. Volver");
             System.out.print("Opción: ");
             String op = sc.nextLine().trim();
+            if (op.isEmpty()) {
+                System.out.println("Opción inválida.");
+                continue;
+            }
             switch (op) {
                 case "1": altaUsuario(); break;
                 case "2": modificarUsuario(); break;
@@ -331,10 +397,24 @@ public class Main {
     private static void altaUsuario() {
         System.out.print("Nombre: ");
         String nombre = sc.nextLine().trim();
+        if (nombre.isEmpty()) {
+            System.out.println("Error: el nombre es obligatorio.");
+            return;
+        }
+        
         System.out.print("Apellido: ");
         String apellido = sc.nextLine().trim();
+        if (apellido.isEmpty()) {
+            System.out.println("Error: el apellido es obligatorio.");
+            return;
+        }
+        
         System.out.print("Mail: ");
         String mail = sc.nextLine().trim();
+        if (mail.isEmpty()) {
+            System.out.println("Error: el mail es obligatorio.");
+            return;
+        }
 
         Optional<Usuario> existe = usuarioRepo.buscarPorMail(mail);
         if (existe.isPresent()) {
@@ -344,8 +424,14 @@ public class Main {
 
         System.out.print("Celular: ");
         String celular = sc.nextLine().trim();
+        
         System.out.print("Contraseña: ");
         String password = sc.nextLine().trim();
+        if (password.isEmpty()) {
+            System.out.println("Error: la contraseña es obligatoria.");
+            return;
+        }
+        
         System.out.print("Rol (ADMIN/USUARIO): ");
         String rolStr = sc.nextLine().trim().toUpperCase();
         Rol rol = rolStr.equals("ADMIN") ? Rol.ADMIN : Rol.USUARIO;
@@ -365,8 +451,9 @@ public class Main {
 
     private static void modificarUsuario() {
         listarUsuarios();
-        System.out.print("ID de usuario a modificar: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID de usuario a modificar: ");
+        if (id == null) return;
+        
         Optional<Usuario> opt = usuarioRepo.buscarPorId(id);
         if (opt.isEmpty()) {
             System.out.println("Usuario no encontrado.");
@@ -412,8 +499,9 @@ public class Main {
 
     private static void bajaUsuario() {
         listarUsuarios();
-        System.out.print("ID de usuario a eliminar: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID de usuario a eliminar: ");
+        if (id == null) return;
+        
         boolean eliminado = usuarioRepo.eliminarLogico(id);
         if (eliminado) {
             System.out.println("Usuario eliminado (baja lógica).");
@@ -437,6 +525,10 @@ public class Main {
     private static void buscarUsuarioPorMail() {
         System.out.print("Mail a buscar: ");
         String mail = sc.nextLine().trim();
+        if (mail.isEmpty()) {
+            System.out.println("Operación cancelada.");
+            return;
+        }
         Optional<Usuario> opt = usuarioRepo.buscarPorMail(mail);
         if (opt.isEmpty()) {
             System.out.println("No existe un usuario activo con ese mail.");
@@ -450,7 +542,7 @@ public class Main {
         System.out.println("Rol: " + u.getRol());
     }
 
-    // ── Submenú Pedidos ─────────────────────────────────────────────────
+    // ==================== SUBMENÚ PEDIDOS ====================
 
     private static void menuPedidos() {
         boolean volver = false;
@@ -465,6 +557,10 @@ public class Main {
             System.out.println("0. Volver");
             System.out.print("Opción: ");
             String op = sc.nextLine().trim();
+            if (op.isEmpty()) {
+                System.out.println("Opción inválida.");
+                continue;
+            }
             switch (op) {
                 case "1": altaPedido(); break;
                 case "2": cambiarEstadoPedido(); break;
@@ -480,8 +576,9 @@ public class Main {
 
     private static void altaPedido() {
         listarUsuarios();
-        System.out.print("ID del usuario: ");
-        Long userId = Long.parseLong(sc.nextLine().trim());
+        Long userId = leerId("ID del usuario: ");
+        if (userId == null) return;
+        
         Optional<Usuario> optUser = usuarioRepo.buscarPorId(userId);
         if (optUser.isEmpty()) {
             System.out.println("Usuario no encontrado.");
@@ -492,6 +589,10 @@ public class Main {
         System.out.println("Formas de pago: TARJETA, TRANSFERENCIA, EFECTIVO");
         System.out.print("Forma de pago: ");
         String fp = sc.nextLine().trim().toUpperCase();
+        if (fp.isEmpty()) {
+            System.out.println("Forma de pago inválida.");
+            return;
+        }
         FormaPago formaPago;
         try {
             formaPago = FormaPago.valueOf(fp);
@@ -505,7 +606,12 @@ public class Main {
         while (seguir) {
             listarProductos();
             System.out.print("ID del producto (0 para terminar): ");
-            Long prodId = Long.parseLong(sc.nextLine().trim());
+            String prodIdStr = sc.nextLine().trim();
+            if (prodIdStr.isEmpty()) {
+                System.out.println("ID inválido.");
+                continue;
+            }
+            Long prodId = Long.parseLong(prodIdStr);
             if (prodId == 0) break;
 
             Optional<Producto> optProd = productoRepo.buscarPorId(prodId);
@@ -519,7 +625,12 @@ public class Main {
                 continue;
             }
             System.out.print("Cantidad: ");
-            int cantidad = Integer.parseInt(sc.nextLine().trim());
+            String cantStr = sc.nextLine().trim();
+            if (cantStr.isEmpty()) {
+                System.out.println("Cantidad inválida.");
+                continue;
+            }
+            int cantidad = Integer.parseInt(cantStr);
             if (cantidad <= 0) {
                 System.out.println("Cantidad inválida.");
                 continue;
@@ -558,10 +669,8 @@ public class Main {
                 Producto prod = (Producto) item[0];
                 int cantidad = (int) item[1];
 
-                // Recuperar producto gestionado
                 Producto prodGestionado = em.find(Producto.class, prod.getId());
 
-                // Crear detalle
                 DetallePedido detalle = DetallePedido.builder()
                         .cantidad(cantidad)
                         .producto(prodGestionado)
@@ -571,7 +680,6 @@ public class Main {
 
                 pedido.getDetalles().add(detalle);
 
-                // Reducir stock
                 prodGestionado.setStock(prodGestionado.getStock() - cantidad);
                 em.merge(prodGestionado);
             }
@@ -600,8 +708,9 @@ public class Main {
 
     private static void cambiarEstadoPedido() {
         listarPedidos();
-        System.out.print("ID del pedido: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID del pedido: ");
+        if (id == null) return;
+        
         Optional<Pedido> opt = pedidoRepo.buscarPorId(id);
         if (opt.isEmpty()) {
             System.out.println("Pedido no encontrado.");
@@ -611,6 +720,10 @@ public class Main {
         System.out.println("Estado actual: " + pedido.getEstado());
         System.out.println("Nuevo estado (PENDIENTE, CONFIRMADO, TERMINADO, CANCELADO): ");
         String estadoStr = sc.nextLine().trim().toUpperCase();
+        if (estadoStr.isEmpty()) {
+            System.out.println("Operación cancelada.");
+            return;
+        }
         try {
             EstadoPedido nuevoEstado = EstadoPedido.valueOf(estadoStr);
             pedido.setEstado(nuevoEstado);
@@ -623,8 +736,9 @@ public class Main {
 
     private static void bajaPedido() {
         listarPedidos();
-        System.out.print("ID del pedido a eliminar: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID del pedido a eliminar: ");
+        if (id == null) return;
+        
         boolean eliminado = pedidoRepo.eliminarLogico(id);
         if (eliminado) {
             System.out.println("Pedido eliminado (baja lógica).");
@@ -647,8 +761,9 @@ public class Main {
 
     private static void pedidosPorUsuario() {
         listarUsuarios();
-        System.out.print("ID del usuario: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID del usuario: ");
+        if (id == null) return;
+        
         List<Pedido> pedidos = pedidoRepo.buscarPorUsuario(id);
         if (pedidos.isEmpty()) {
             System.out.println("El usuario no tiene pedidos activos.");
@@ -663,6 +778,10 @@ public class Main {
         System.out.println("Estados: PENDIENTE, CONFIRMADO, TERMINADO, CANCELADO");
         System.out.print("Estado: ");
         String estadoStr = sc.nextLine().trim().toUpperCase();
+        if (estadoStr.isEmpty()) {
+            System.out.println("Operación cancelada.");
+            return;
+        }
         try {
             EstadoPedido estado = EstadoPedido.valueOf(estadoStr);
             List<Pedido> pedidos = pedidoRepo.buscarPorEstado(estado);
@@ -678,7 +797,7 @@ public class Main {
         }
     }
 
-    // ── Submenú Reportes ─────────────────────────────────────────────────
+    // ==================== SUBMENÚ REPORTES ====================
 
     private static void menuReportes() {
         boolean volver = false;
@@ -691,6 +810,10 @@ public class Main {
             System.out.println("0. Volver");
             System.out.print("Opción: ");
             String op = sc.nextLine().trim();
+            if (op.isEmpty()) {
+                System.out.println("Opción inválida.");
+                continue;
+            }
             switch (op) {
                 case "1": reporteProductosPorCategoria(); break;
                 case "2": reportePedidosPorUsuario(); break;
@@ -704,8 +827,9 @@ public class Main {
 
     private static void reporteProductosPorCategoria() {
         listarCategorias();
-        System.out.print("ID de categoría: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID de categoría: ");
+        if (id == null) return;
+        
         List<Producto> productos = productoRepo.buscarPorCategoria(id);
         if (productos.isEmpty()) {
             System.out.println("No hay productos activos en esta categoría.");
@@ -718,8 +842,9 @@ public class Main {
 
     private static void reportePedidosPorUsuario() {
         listarUsuarios();
-        System.out.print("ID del usuario: ");
-        Long id = Long.parseLong(sc.nextLine().trim());
+        Long id = leerId("ID del usuario: ");
+        if (id == null) return;
+        
         List<Pedido> pedidos = pedidoRepo.buscarPorUsuario(id);
         if (pedidos.isEmpty()) {
             System.out.println("El usuario no tiene pedidos activos.");
@@ -734,6 +859,10 @@ public class Main {
         System.out.println("Estados: PENDIENTE, CONFIRMADO, TERMINADO, CANCELADO");
         System.out.print("Estado: ");
         String estadoStr = sc.nextLine().trim().toUpperCase();
+        if (estadoStr.isEmpty()) {
+            System.out.println("Operación cancelada.");
+            return;
+        }
         try {
             EstadoPedido estado = EstadoPedido.valueOf(estadoStr);
             List<Pedido> pedidos = pedidoRepo.buscarPorEstado(estado);
