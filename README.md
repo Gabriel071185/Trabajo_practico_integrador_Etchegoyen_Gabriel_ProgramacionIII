@@ -122,7 +122,7 @@ Food Store - Sistema de gestión de pedidos de comida/
             └── utils/
                 ├── api.ts
                 └── auth.ts
-
+```
 ---
 
 ## 🚀 Instalación y Ejecución
@@ -139,40 +139,46 @@ Food Store - Sistema de gestión de pedidos de comida/
 
 1. Abrir una terminal en la carpeta del frontend:
 
-```bash
-cd "Food Store - Sistema de gestión de pedidos de comida/front_end/final-prog3"
-Instalar dependencias:
+`cd "Food Store - Sistema de gestión de pedidos de comida/front_end/final-prog3"`
 
-bash
-npm install
-Ejecutar el servidor de desarrollo:
 
-bash
-npm run dev
-Abrir el navegador en: http://localhost:5173
+2. Instalar dependencias:
 
-Credenciales de prueba:
-Rol	Email	Contraseña
-ADMIN	admin@admin.com	123456
-USUARIO	cliente@food.com	cliente123
-Backend
-Abrir una terminal en la carpeta del backend:
+`npm install`
 
-bash
-cd "Food Store - Sistema de gestión de pedidos de comida/back_end/food_store"
-Ejecutar la aplicación:
+3. Ejecutar el servidor de desarrollo:
 
-En Linux/Mac:
+`npm run dev`
 
-bash
-./gradlew run
-En Windows:
+4. Abrir el navegador en: http://localhost:5173
 
-bash
-gradlew.bat run
-Navegar por el menú de consola:
+### Credenciales de prueba
 
-text
+| Rol | Email | Contraseña |
+|-----|-------|------------|
+| ADMIN | admin@admin.com | 123456 |
+| USUARIO | cliente@food.com | cliente123 |
+
+
+### Backend
+
+1. Abrir una terminal en la carpeta del backend:
+
+`cd "Food Store - Sistema de gestión de pedidos de comida/back_end/food_store"`
+
+2. Ejecutar la aplicación:
+
+- En Linux/Mac:
+
+`./gradlew run`
+
+- En Windows:
+
+`gradlew.bat run`
+
+3. Navegar por el menú de consola:
+
+
 ===== FOOD STORE - MENÚ PRINCIPAL =====
 1. Gestionar Categorías
 2. Gestionar Productos
@@ -180,17 +186,21 @@ text
 4. Gestionar Pedidos
 5. Reportes
 0. Salir
-Orden recomendado de uso:
-Crear Categorías
 
-Crear Productos (asociados a categorías)
+4. Orden recomendado de uso:
 
-Crear Usuarios
+- Crear Categorías
 
-Crear Pedidos (asociados a usuarios y productos)
+- Crear Productos (asociados a categorías)
 
-📊 Funcionalidades
-Frontend (Cliente)
+- Crear Usuarios
+
+- Crear Pedidos (asociados a usuarios y productos)
+
+## 📊 Funcionalidades
+
+### Frontend (Cliente)
+
 ✅ Login / Logout
 
 ✅ Catálogo de productos (grid)
@@ -207,7 +217,8 @@ Frontend (Cliente)
 
 ✅ Panel de Administración (CRUD de categorías, productos y pedidos)
 
-Backend (Consola)
+### Backend (Consola)
+
 ✅ ABM de Categorías (Alta, Baja lógica, Modificación, Listado)
 
 ✅ ABM de Productos (con asociación a categoría)
@@ -220,24 +231,24 @@ Backend (Consola)
 
 ✅ Reportes:
 
-Productos por categoría
+- Productos por categoría
+- Pedidos por usuario
+- Pedidos por estado
+- Total facturado
 
-Pedidos por usuario
+## 🎨 Paleta de Colores y Tipografía
 
-Pedidos por estado
+| Elemento | Valor |
+|----------|-------|
+| Verde oscuro primario | `#1a3c2e` |
+| Verde medio | `#2d6a4f` / `#40916c` |
+| Dorado (acentos) | `#b5985a` |
+| Tipografía principal | DM Sans |
+| Tipografía títulos | DM Serif Display |
 
-Total facturado
+## 📹 Video Demostrativo
 
-🎨 Paleta de Colores y Tipografía
-Elemento	Valor
-Verde oscuro primario	#1a3c2e
-Verde medio	#2d6a4f / #40916c
-Dorado (acentos)	#b5985a
-Tipografía principal	DM Sans
-Tipografía títulos	DM Serif Display
-
-📹 Video Demostrativo
-Enlace al video demostrativo
+Enlace al video demostrativo:
 
 El video muestra:
 
@@ -246,26 +257,22 @@ Flujo completo del cliente (login, navegación, carrito, confirmación de pedido
 Flujo completo del administrador (gestión de catálogo, actualización de estados de pedidos)
 
 
-👨‍💻 Autor
+## 👨‍💻 Autor
 Gabriel Etchegoyen
 
-GitHub: @Gabriel071185
+### GitHub: @Gabriel071185
 
-📅 Fecha de Entrega
+## 📅 Fecha de Entrega
 Junio 2026
 
-📚 Bibliografía
-TypeScript Documentation
+## Bibliografía
 
-Vite Documentation
-
-Hibernate ORM Documentation
-
-H2 Database Documentation
-
-Gradle Documentation
-
-Jakarta Persistence (JPA) 3.1
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [Vite Documentation](https://vitejs.dev/guide/)
+- [Hibernate ORM Documentation](https://hibernate.org/orm/documentation/6.4/)
+- [H2 Database Documentation](https://www.h2database.com/html/main.html)
+- [Gradle Documentation](https://docs.gradle.org/)
+- [Jakarta Persistence (JPA) 3.1](https://jakarta.ee/specifications/persistence/3.1/)
 
 Google Fonts - DM Sans
 
