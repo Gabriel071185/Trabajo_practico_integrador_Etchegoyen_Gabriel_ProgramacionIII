@@ -13,6 +13,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -59,38 +60,703 @@ public class Main {
         System.out.println("Aplicación finalizada.");
     }
 
-    // ── Submenús ─────────────────────────────────────────────────
+    // ── Submenú Categorías ─────────────────────────────────────────────────
 
     private static void menuCategorias() {
-        // TODO: Implementar submenú de Categorías.
-        // Opciones: 1-Alta  2-Modificar  3-Baja lógica  4-Listado  0-Volver
-        System.out.println("[Categorías] → TODO: implementar");
+        boolean volver = false;
+        while (!volver) {
+            System.out.println("\n--- GESTIÓN DE CATEGORÍAS ---");
+            System.out.println("1. Alta");
+            System.out.println("2. Modificar");
+            System.out.println("3. Baja lógica");
+            System.out.println("4. Listado");
+            System.out.println("0. Volver");
+            System.out.print("Opción: ");
+            String op = sc.nextLine().trim();
+            switch (op) {
+                case "1": altaCategoria(); break;
+                case "2": modificarCategoria(); break;
+                case "3": bajaCategoria(); break;
+                case "4": listarCategorias(); break;
+                case "0": volver = true; break;
+                default: System.out.println("Opción inválida.");
+            }
+        }
     }
+
+    private static void altaCategoria() {
+        System.out.print("Nombre: ");
+        String nombre = sc.nextLine().trim();
+        if (nombre.isEmpty()) {
+            System.out.println("Error: el nombre es obligatorio.");
+            return;
+        }
+        System.out.print("Descripción: ");
+        String descripcion = sc.nextLine().trim();
+
+        Categoria categoria = Categoria.builder()
+                .nombre(nombre)
+                .descripcion(descripcion.isEmpty() ? null : descripcion)
+                .build();
+
+        Categoria guardada = categoriaRepo.guardar(categoria);
+        System.out.println("Categoría creada con ID: " + guardada.getId());
+    }
+
+    private static void modificarCategoria() {
+        listarCategorias();
+        System.out.print("ID de categoría a modificar: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        Optional<Categoria> opt = categoriaRepo.buscarPorId(id);
+        if (opt.isEmpty()) {
+            System.out.println("Categoría no encontrada.");
+            return;
+        }
+        Categoria cat = opt.get();
+        System.out.println("Valores actuales:");
+        System.out.println("  Nombre: " + cat.getNombre());
+        System.out.println("  Descripción: " + (cat.getDescripcion() == null ? "-" : cat.getDescripcion()));
+
+        System.out.print("Nuevo nombre (Enter para mantener): ");
+        String nombre = sc.nextLine().trim();
+        if (!nombre.isEmpty()) cat.setNombre(nombre);
+
+        System.out.print("Nueva descripción (Enter para mantener): ");
+        String descripcion = sc.nextLine().trim();
+        if (!descripcion.isEmpty()) cat.setDescripcion(descripcion);
+
+        categoriaRepo.guardar(cat);
+        System.out.println("Categoría actualizada.");
+    }
+
+    private static void bajaCategoria() {
+        listarCategorias();
+        System.out.print("ID de categoría a eliminar: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        boolean eliminado = categoriaRepo.eliminarLogico(id);
+        if (eliminado) {
+            System.out.println("Categoría eliminada (baja lógica).");
+        } else {
+            System.out.println("Categoría no encontrada o ya eliminada.");
+        }
+    }
+
+    private static void listarCategorias() {
+        List<Categoria> categorias = categoriaRepo.listarActivos();
+        if (categorias.isEmpty()) {
+            System.out.println("No hay categorías activas.");
+            return;
+        }
+        System.out.println("\n--- CATEGORÍAS ACTIVAS ---");
+        for (Categoria c : categorias) {
+            System.out.println("ID: " + c.getId() + " | Nombre: " + c.getNombre() + " | Desc: " + (c.getDescripcion() == null ? "-" : c.getDescripcion()));
+        }
+    }
+
+    // ── Submenú Productos ─────────────────────────────────────────────────
 
     private static void menuProductos() {
-        // TODO: Implementar submenú de Productos.
-        // Opciones: 1-Alta  2-Modificar  3-Baja lógica  4-Listado  0-Volver
-        System.out.println("[Productos] → TODO: implementar");
+        boolean volver = false;
+        while (!volver) {
+            System.out.println("\n--- GESTIÓN DE PRODUCTOS ---");
+            System.out.println("1. Alta");
+            System.out.println("2. Modificar");
+            System.out.println("3. Baja lógica");
+            System.out.println("4. Listado");
+            System.out.println("0. Volver");
+            System.out.print("Opción: ");
+            String op = sc.nextLine().trim();
+            switch (op) {
+                case "1": altaProducto(); break;
+                case "2": modificarProducto(); break;
+                case "3": bajaProducto(); break;
+                case "4": listarProductos(); break;
+                case "0": volver = true; break;
+                default: System.out.println("Opción inválida.");
+            }
+        }
     }
+
+    private static void altaProducto() {
+        listarCategorias();
+        System.out.print("ID de categoría: ");
+        Long catId = Long.parseLong(sc.nextLine().trim());
+        Optional<Categoria> optCat = categoriaRepo.buscarPorId(catId);
+        if (optCat.isEmpty()) {
+            System.out.println("Categoría no encontrada.");
+            return;
+        }
+        Categoria categoria = optCat.get();
+
+        System.out.print("Nombre: ");
+        String nombre = sc.nextLine().trim();
+        if (nombre.isEmpty()) {
+            System.out.println("Error: el nombre es obligatorio.");
+            return;
+        }
+
+        System.out.print("Descripción: ");
+        String descripcion = sc.nextLine().trim();
+
+        System.out.print("Precio: ");
+        double precio = Double.parseDouble(sc.nextLine().trim());
+        if (precio <= 0) {
+            System.out.println("Error: el precio debe ser mayor a 0.");
+            return;
+        }
+
+        System.out.print("Stock: ");
+        int stock = Integer.parseInt(sc.nextLine().trim());
+        if (stock < 0) {
+            System.out.println("Error: el stock no puede ser negativo.");
+            return;
+        }
+
+        System.out.print("Imagen (URL, opcional): ");
+        String imagen = sc.nextLine().trim();
+
+        System.out.print("Disponible (S/N): ");
+        String disp = sc.nextLine().trim().toUpperCase();
+        boolean disponible = disp.equals("S");
+
+        Producto producto = Producto.builder()
+                .nombre(nombre)
+                .descripcion(descripcion.isEmpty() ? null : descripcion)
+                .precio(precio)
+                .stock(stock)
+                .imagen(imagen.isEmpty() ? null : imagen)
+                .disponible(disponible)
+                .categoria(categoria)
+                .build();
+
+        Producto guardado = productoRepo.guardar(producto);
+        System.out.println("Producto creado con ID: " + guardado.getId() + " | Categoría: " + categoria.getNombre());
+    }
+
+    private static void modificarProducto() {
+        listarProductos();
+        System.out.print("ID de producto a modificar: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        Optional<Producto> opt = productoRepo.buscarPorId(id);
+        if (opt.isEmpty()) {
+            System.out.println("Producto no encontrado.");
+            return;
+        }
+        Producto prod = opt.get();
+        System.out.println("Valores actuales:");
+        System.out.println("  Nombre: " + prod.getNombre());
+        System.out.println("  Precio: " + prod.getPrecio());
+        System.out.println("  Stock: " + prod.getStock());
+
+        System.out.print("Nuevo nombre (Enter para mantener): ");
+        String nombre = sc.nextLine().trim();
+        if (!nombre.isEmpty()) prod.setNombre(nombre);
+
+        System.out.print("Nuevo precio (Enter para mantener): ");
+        String precioStr = sc.nextLine().trim();
+        if (!precioStr.isEmpty()) {
+            double precio = Double.parseDouble(precioStr);
+            if (precio <= 0) {
+                System.out.println("Error: el precio debe ser mayor a 0.");
+                return;
+            }
+            prod.setPrecio(precio);
+        }
+
+        System.out.print("Nuevo stock (Enter para mantener): ");
+        String stockStr = sc.nextLine().trim();
+        if (!stockStr.isEmpty()) {
+            int stock = Integer.parseInt(stockStr);
+            if (stock < 0) {
+                System.out.println("Error: el stock no puede ser negativo.");
+                return;
+            }
+            prod.setStock(stock);
+        }
+
+        productoRepo.guardar(prod);
+        System.out.println("Producto actualizado.");
+    }
+
+    private static void bajaProducto() {
+        listarProductos();
+        System.out.print("ID de producto a eliminar: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        boolean eliminado = productoRepo.eliminarLogico(id);
+        if (eliminado) {
+            System.out.println("Producto eliminado (baja lógica).");
+        } else {
+            System.out.println("Producto no encontrado o ya eliminado.");
+        }
+    }
+
+    private static void listarProductos() {
+        List<Producto> productos = productoRepo.listarActivos();
+        if (productos.isEmpty()) {
+            System.out.println("No hay productos activos.");
+            return;
+        }
+        System.out.println("\n--- PRODUCTOS ACTIVOS ---");
+        for (Producto p : productos) {
+            System.out.println("ID: " + p.getId() + " | Nombre: " + p.getNombre() + " | Precio: $" + p.getPrecio() + " | Stock: " + p.getStock() + " | Disponible: " + (p.getDisponible() ? "Sí" : "No"));
+        }
+    }
+
+    // ── Submenú Usuarios ─────────────────────────────────────────────────
 
     private static void menuUsuarios() {
-        // TODO: Implementar submenú de Usuarios.
-        // Opciones: 1-Alta  2-Modificar  3-Baja lógica  4-Listado  5-Buscar por mail  0-Volver
-        System.out.println("[Usuarios] → TODO: implementar");
+        boolean volver = false;
+        while (!volver) {
+            System.out.println("\n--- GESTIÓN DE USUARIOS ---");
+            System.out.println("1. Alta");
+            System.out.println("2. Modificar");
+            System.out.println("3. Baja lógica");
+            System.out.println("4. Listado");
+            System.out.println("5. Buscar por mail");
+            System.out.println("0. Volver");
+            System.out.print("Opción: ");
+            String op = sc.nextLine().trim();
+            switch (op) {
+                case "1": altaUsuario(); break;
+                case "2": modificarUsuario(); break;
+                case "3": bajaUsuario(); break;
+                case "4": listarUsuarios(); break;
+                case "5": buscarUsuarioPorMail(); break;
+                case "0": volver = true; break;
+                default: System.out.println("Opción inválida.");
+            }
+        }
     }
+
+    private static void altaUsuario() {
+        System.out.print("Nombre: ");
+        String nombre = sc.nextLine().trim();
+        System.out.print("Apellido: ");
+        String apellido = sc.nextLine().trim();
+        System.out.print("Mail: ");
+        String mail = sc.nextLine().trim();
+
+        Optional<Usuario> existe = usuarioRepo.buscarPorMail(mail);
+        if (existe.isPresent()) {
+            System.out.println("Error: ya existe un usuario con ese mail.");
+            return;
+        }
+
+        System.out.print("Celular: ");
+        String celular = sc.nextLine().trim();
+        System.out.print("Contraseña: ");
+        String password = sc.nextLine().trim();
+        System.out.print("Rol (ADMIN/USUARIO): ");
+        String rolStr = sc.nextLine().trim().toUpperCase();
+        Rol rol = rolStr.equals("ADMIN") ? Rol.ADMIN : Rol.USUARIO;
+
+        Usuario usuario = Usuario.builder()
+                .nombre(nombre)
+                .apellido(apellido)
+                .mail(mail)
+                .celular(celular.isEmpty() ? null : celular)
+                .contraseña(password)
+                .rol(rol)
+                .build();
+
+        Usuario guardado = usuarioRepo.guardar(usuario);
+        System.out.println("Usuario creado con ID: " + guardado.getId());
+    }
+
+    private static void modificarUsuario() {
+        listarUsuarios();
+        System.out.print("ID de usuario a modificar: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        Optional<Usuario> opt = usuarioRepo.buscarPorId(id);
+        if (opt.isEmpty()) {
+            System.out.println("Usuario no encontrado.");
+            return;
+        }
+        Usuario user = opt.get();
+        System.out.println("Valores actuales:");
+        System.out.println("  Nombre: " + user.getNombre());
+        System.out.println("  Apellido: " + user.getApellido());
+        System.out.println("  Mail: " + user.getMail());
+        System.out.println("  Celular: " + (user.getCelular() == null ? "-" : user.getCelular()));
+
+        System.out.print("Nuevo nombre (Enter para mantener): ");
+        String nombre = sc.nextLine().trim();
+        if (!nombre.isEmpty()) user.setNombre(nombre);
+
+        System.out.print("Nuevo apellido (Enter para mantener): ");
+        String apellido = sc.nextLine().trim();
+        if (!apellido.isEmpty()) user.setApellido(apellido);
+
+        System.out.print("Nuevo mail (Enter para mantener): ");
+        String mail = sc.nextLine().trim();
+        if (!mail.isEmpty()) {
+            Optional<Usuario> existe = usuarioRepo.buscarPorMail(mail);
+            if (existe.isPresent() && !existe.get().getId().equals(user.getId())) {
+                System.out.println("Error: ese mail ya está en uso por otro usuario.");
+                return;
+            }
+            user.setMail(mail);
+        }
+
+        System.out.print("Nuevo celular (Enter para mantener): ");
+        String celular = sc.nextLine().trim();
+        if (!celular.isEmpty()) user.setCelular(celular);
+
+        System.out.print("Nueva contraseña (Enter para mantener): ");
+        String password = sc.nextLine().trim();
+        if (!password.isEmpty()) user.setContraseña(password);
+
+        usuarioRepo.guardar(user);
+        System.out.println("Usuario actualizado.");
+    }
+
+    private static void bajaUsuario() {
+        listarUsuarios();
+        System.out.print("ID de usuario a eliminar: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        boolean eliminado = usuarioRepo.eliminarLogico(id);
+        if (eliminado) {
+            System.out.println("Usuario eliminado (baja lógica).");
+        } else {
+            System.out.println("Usuario no encontrado o ya eliminado.");
+        }
+    }
+
+    private static void listarUsuarios() {
+        List<Usuario> usuarios = usuarioRepo.listarActivos();
+        if (usuarios.isEmpty()) {
+            System.out.println("No hay usuarios activos.");
+            return;
+        }
+        System.out.println("\n--- USUARIOS ACTIVOS ---");
+        for (Usuario u : usuarios) {
+            System.out.println("ID: " + u.getId() + " | Nombre: " + u.getNombre() + " " + u.getApellido() + " | Mail: " + u.getMail() + " | Rol: " + u.getRol());
+        }
+    }
+
+    private static void buscarUsuarioPorMail() {
+        System.out.print("Mail a buscar: ");
+        String mail = sc.nextLine().trim();
+        Optional<Usuario> opt = usuarioRepo.buscarPorMail(mail);
+        if (opt.isEmpty()) {
+            System.out.println("No existe un usuario activo con ese mail.");
+            return;
+        }
+        Usuario u = opt.get();
+        System.out.println("ID: " + u.getId());
+        System.out.println("Nombre: " + u.getNombre() + " " + u.getApellido());
+        System.out.println("Mail: " + u.getMail());
+        System.out.println("Celular: " + (u.getCelular() == null ? "-" : u.getCelular()));
+        System.out.println("Rol: " + u.getRol());
+    }
+
+    // ── Submenú Pedidos ─────────────────────────────────────────────────
 
     private static void menuPedidos() {
-        // TODO: Implementar submenú de Pedidos.
-        // Opciones: 1-Alta  2-Cambiar estado  3-Baja lógica  4-Listado
-        //           5-Por usuario  6-Por estado  0-Volver
-        System.out.println("[Pedidos] → TODO: implementar");
+        boolean volver = false;
+        while (!volver) {
+            System.out.println("\n--- GESTIÓN DE PEDIDOS ---");
+            System.out.println("1. Alta de pedido");
+            System.out.println("2. Cambiar estado");
+            System.out.println("3. Baja lógica");
+            System.out.println("4. Listado");
+            System.out.println("5. Pedidos por usuario");
+            System.out.println("6. Pedidos por estado");
+            System.out.println("0. Volver");
+            System.out.print("Opción: ");
+            String op = sc.nextLine().trim();
+            switch (op) {
+                case "1": altaPedido(); break;
+                case "2": cambiarEstadoPedido(); break;
+                case "3": bajaPedido(); break;
+                case "4": listarPedidos(); break;
+                case "5": pedidosPorUsuario(); break;
+                case "6": pedidosPorEstado(); break;
+                case "0": volver = true; break;
+                default: System.out.println("Opción inválida.");
+            }
+        }
     }
+
+    private static void altaPedido() {
+        listarUsuarios();
+        System.out.print("ID del usuario: ");
+        Long userId = Long.parseLong(sc.nextLine().trim());
+        Optional<Usuario> optUser = usuarioRepo.buscarPorId(userId);
+        if (optUser.isEmpty()) {
+            System.out.println("Usuario no encontrado.");
+            return;
+        }
+        Usuario usuario = optUser.get();
+
+        System.out.println("Formas de pago: TARJETA, TRANSFERENCIA, EFECTIVO");
+        System.out.print("Forma de pago: ");
+        String fp = sc.nextLine().trim().toUpperCase();
+        FormaPago formaPago;
+        try {
+            formaPago = FormaPago.valueOf(fp);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Forma de pago inválida.");
+            return;
+        }
+
+        List<Object[]> productosTemp = new ArrayList<>();
+        boolean seguir = true;
+        while (seguir) {
+            listarProductos();
+            System.out.print("ID del producto (0 para terminar): ");
+            Long prodId = Long.parseLong(sc.nextLine().trim());
+            if (prodId == 0) break;
+
+            Optional<Producto> optProd = productoRepo.buscarPorId(prodId);
+            if (optProd.isEmpty()) {
+                System.out.println("Producto no encontrado.");
+                continue;
+            }
+            Producto prod = optProd.get();
+            if (!prod.getDisponible()) {
+                System.out.println("Producto no disponible.");
+                continue;
+            }
+            System.out.print("Cantidad: ");
+            int cantidad = Integer.parseInt(sc.nextLine().trim());
+            if (cantidad <= 0) {
+                System.out.println("Cantidad inválida.");
+                continue;
+            }
+            if (cantidad > prod.getStock()) {
+                System.out.println("Stock insuficiente. Stock disponible: " + prod.getStock());
+                continue;
+            }
+            productosTemp.add(new Object[]{prod, cantidad});
+            System.out.print("Agregar otro producto? (S/N): ");
+            String resp = sc.nextLine().trim().toUpperCase();
+            if (!resp.equals("S")) seguir = false;
+        }
+
+        if (productosTemp.isEmpty()) {
+            System.out.println("El pedido debe tener al menos un producto.");
+            return;
+        }
+
+        EntityManagerFactory emf = JPAUtil.getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        try {
+            tx.begin();
+
+            Pedido pedido = Pedido.builder()
+                    .usuario(usuario)
+                    .fecha(LocalDate.now())
+                    .estado(EstadoPedido.PENDIENTE)
+                    .formaPago(formaPago)
+                    .total(0.0)
+                    .build();
+
+            for (Object[] item : productosTemp) {
+                Producto prod = (Producto) item[0];
+                int cantidad = (int) item[1];
+
+                // Recuperar producto gestionado
+                Producto prodGestionado = em.find(Producto.class, prod.getId());
+
+                // Crear detalle
+                DetallePedido detalle = DetallePedido.builder()
+                        .cantidad(cantidad)
+                        .producto(prodGestionado)
+                        .subtotal(prodGestionado.getPrecio() * cantidad)
+                        .pedido(pedido)
+                        .build();
+
+                pedido.getDetalles().add(detalle);
+
+                // Reducir stock
+                prodGestionado.setStock(prodGestionado.getStock() - cantidad);
+                em.merge(prodGestionado);
+            }
+
+            pedido.calcularTotal();
+            em.persist(pedido);
+            tx.commit();
+
+            System.out.println("Pedido creado exitosamente!");
+            System.out.println("ID: " + pedido.getId());
+            System.out.println("Fecha: " + pedido.getFecha());
+            System.out.println("Usuario: " + usuario.getNombre() + " " + usuario.getApellido());
+            System.out.println("Total: $" + pedido.getTotal());
+            System.out.println("Productos:");
+            for (DetallePedido d : pedido.getDetalles()) {
+                System.out.println("  - " + d.getProducto().getNombre() + " x " + d.getCantidad() + " = $" + d.getSubtotal());
+            }
+
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            System.out.println("Error al crear el pedido: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
+    private static void cambiarEstadoPedido() {
+        listarPedidos();
+        System.out.print("ID del pedido: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        Optional<Pedido> opt = pedidoRepo.buscarPorId(id);
+        if (opt.isEmpty()) {
+            System.out.println("Pedido no encontrado.");
+            return;
+        }
+        Pedido pedido = opt.get();
+        System.out.println("Estado actual: " + pedido.getEstado());
+        System.out.println("Nuevo estado (PENDIENTE, CONFIRMADO, TERMINADO, CANCELADO): ");
+        String estadoStr = sc.nextLine().trim().toUpperCase();
+        try {
+            EstadoPedido nuevoEstado = EstadoPedido.valueOf(estadoStr);
+            pedido.setEstado(nuevoEstado);
+            pedidoRepo.guardar(pedido);
+            System.out.println("Estado actualizado a: " + nuevoEstado);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Estado inválido.");
+        }
+    }
+
+    private static void bajaPedido() {
+        listarPedidos();
+        System.out.print("ID del pedido a eliminar: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        boolean eliminado = pedidoRepo.eliminarLogico(id);
+        if (eliminado) {
+            System.out.println("Pedido eliminado (baja lógica).");
+        } else {
+            System.out.println("Pedido no encontrado o ya eliminado.");
+        }
+    }
+
+    private static void listarPedidos() {
+        List<Pedido> pedidos = pedidoRepo.listarActivos();
+        if (pedidos.isEmpty()) {
+            System.out.println("No hay pedidos activos.");
+            return;
+        }
+        System.out.println("\n--- PEDIDOS ACTIVOS ---");
+        for (Pedido p : pedidos) {
+            System.out.println("ID: " + p.getId() + " | Fecha: " + p.getFecha() + " | Estado: " + p.getEstado() + " | Total: $" + p.getTotal());
+        }
+    }
+
+    private static void pedidosPorUsuario() {
+        listarUsuarios();
+        System.out.print("ID del usuario: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        List<Pedido> pedidos = pedidoRepo.buscarPorUsuario(id);
+        if (pedidos.isEmpty()) {
+            System.out.println("El usuario no tiene pedidos activos.");
+            return;
+        }
+        for (Pedido p : pedidos) {
+            System.out.println("ID: " + p.getId() + " | Fecha: " + p.getFecha() + " | Estado: " + p.getEstado() + " | Total: $" + p.getTotal());
+        }
+    }
+
+    private static void pedidosPorEstado() {
+        System.out.println("Estados: PENDIENTE, CONFIRMADO, TERMINADO, CANCELADO");
+        System.out.print("Estado: ");
+        String estadoStr = sc.nextLine().trim().toUpperCase();
+        try {
+            EstadoPedido estado = EstadoPedido.valueOf(estadoStr);
+            List<Pedido> pedidos = pedidoRepo.buscarPorEstado(estado);
+            if (pedidos.isEmpty()) {
+                System.out.println("No hay pedidos con estado " + estado);
+                return;
+            }
+            for (Pedido p : pedidos) {
+                System.out.println("ID: " + p.getId() + " | Fecha: " + p.getFecha() + " | Total: $" + p.getTotal());
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Estado inválido.");
+        }
+    }
+
+    // ── Submenú Reportes ─────────────────────────────────────────────────
 
     private static void menuReportes() {
-        // TODO: Implementar submenú de Reportes.
-        // Opciones: 1-Productos por categoría  2-Pedidos por usuario
-        //           3-Pedidos por estado  4-Total facturado  0-Volver
-        System.out.println("[Reportes] → TODO: implementar");
+        boolean volver = false;
+        while (!volver) {
+            System.out.println("\n--- REPORTES ---");
+            System.out.println("1. Productos por categoría");
+            System.out.println("2. Pedidos por usuario");
+            System.out.println("3. Pedidos por estado");
+            System.out.println("4. Total facturado");
+            System.out.println("0. Volver");
+            System.out.print("Opción: ");
+            String op = sc.nextLine().trim();
+            switch (op) {
+                case "1": reporteProductosPorCategoria(); break;
+                case "2": reportePedidosPorUsuario(); break;
+                case "3": reportePedidosPorEstado(); break;
+                case "4": reporteTotalFacturado(); break;
+                case "0": volver = true; break;
+                default: System.out.println("Opción inválida.");
+            }
+        }
     }
 
+    private static void reporteProductosPorCategoria() {
+        listarCategorias();
+        System.out.print("ID de categoría: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        List<Producto> productos = productoRepo.buscarPorCategoria(id);
+        if (productos.isEmpty()) {
+            System.out.println("No hay productos activos en esta categoría.");
+            return;
+        }
+        for (Producto p : productos) {
+            System.out.println("ID: " + p.getId() + " | Nombre: " + p.getNombre() + " | Precio: $" + p.getPrecio() + " | Stock: " + p.getStock());
+        }
+    }
+
+    private static void reportePedidosPorUsuario() {
+        listarUsuarios();
+        System.out.print("ID del usuario: ");
+        Long id = Long.parseLong(sc.nextLine().trim());
+        List<Pedido> pedidos = pedidoRepo.buscarPorUsuario(id);
+        if (pedidos.isEmpty()) {
+            System.out.println("El usuario no tiene pedidos activos.");
+            return;
+        }
+        for (Pedido p : pedidos) {
+            System.out.println("ID: " + p.getId() + " | Fecha: " + p.getFecha() + " | Estado: " + p.getEstado() + " | Forma pago: " + p.getFormaPago() + " | Total: $" + p.getTotal());
+        }
+    }
+
+    private static void reportePedidosPorEstado() {
+        System.out.println("Estados: PENDIENTE, CONFIRMADO, TERMINADO, CANCELADO");
+        System.out.print("Estado: ");
+        String estadoStr = sc.nextLine().trim().toUpperCase();
+        try {
+            EstadoPedido estado = EstadoPedido.valueOf(estadoStr);
+            List<Pedido> pedidos = pedidoRepo.buscarPorEstado(estado);
+            if (pedidos.isEmpty()) {
+                System.out.println("No hay pedidos con estado " + estado);
+                return;
+            }
+            for (Pedido p : pedidos) {
+                System.out.println("ID: " + p.getId() + " | Fecha: " + p.getFecha() + " | Usuario ID: " + (p.getUsuario() != null ? p.getUsuario().getId() : "N/A") + " | Total: $" + p.getTotal());
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Estado inválido.");
+        }
+    }
+
+    private static void reporteTotalFacturado() {
+        List<Pedido> pedidos = pedidoRepo.buscarPorEstado(EstadoPedido.TERMINADO);
+        double total = 0.0;
+        for (Pedido p : pedidos) {
+            if (p.getTotal() != null) {
+                total += p.getTotal();
+            }
+        }
+        System.out.printf(Locale.US, "Total facturado: $%.2f%n", total);
+    }
 }

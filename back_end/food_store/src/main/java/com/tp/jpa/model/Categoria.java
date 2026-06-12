@@ -25,7 +25,8 @@ public class Categoria extends Base {
     @Column(name = "descripcion", length = 500)
     private String descripcion;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // CascadeType.ALL a CascadeType.PERSIST
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id")
     @Builder.Default
     private Set<Producto> productos = new HashSet<>();
@@ -34,5 +35,6 @@ public class Categoria extends Base {
         if (!productos.add(producto)) {
             throw new IllegalArgumentException("Producto ya cargado en la categoría");
         }
+        producto.setCategoria(this); 
     }
 }

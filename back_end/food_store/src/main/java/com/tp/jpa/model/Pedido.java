@@ -26,7 +26,7 @@ public class Pedido extends Base implements Calculable {
     private LocalDate fecha = LocalDate.now();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado",nullable = false, length = 30)
+    @Column(name = "estado", nullable = false, length = 30)
     @Builder.Default
     private EstadoPedido estado = EstadoPedido.PENDIENTE;
 
@@ -35,8 +35,13 @@ public class Pedido extends Base implements Calculable {
     private Double total = 0.0;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "forma_pago",nullable = false, length = 20)
+    @Column(name = "forma_pago", nullable = false, length = 20)
     private FormaPago formaPago;
+
+    // Relación con Usuario (Pedido pertenece a un Usuario)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "pedido_id")
@@ -48,6 +53,7 @@ public class Pedido extends Base implements Calculable {
                 .cantidad(cantidad)
                 .producto(producto)
                 .subtotal(producto.getPrecio() * cantidad)
+                .pedido(this)
                 .build();
 
         this.detalles.add(detalle);
