@@ -1,9 +1,27 @@
+/* Importar fuentes */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+}
+
+h1, h2, h3, .serif-title {
+  font-family: 'DM Serif Display', serif;
+}
+
+
 .login-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a3c2e 0%, #2d6a4f 100%);
   padding: 20px;
 }
 
@@ -20,7 +38,7 @@
 .login-card h1 {
   font-size: 32px;
   margin-bottom: 8px;
-  color: #333;
+  color: #1a3c2e;
 }
 
 .login-card h2 {
@@ -53,13 +71,13 @@
 
 .login-card input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #b5985a;
 }
 
 .login-card button {
   width: 100%;
   padding: 12px;
-  background: #667eea;
+  background: #2d6a4f;
   color: white;
   border: none;
   border-radius: 8px;
@@ -70,7 +88,7 @@
 }
 
 .login-card button:hover {
-  background: #5a67d8;
+  background: #40916c;
 }
 
 .login-card .error-message {
@@ -96,5 +114,5 @@
 }
 
 .login-card .demo-users strong {
-  color: #333;
+  color: #1a3c2e;
 }

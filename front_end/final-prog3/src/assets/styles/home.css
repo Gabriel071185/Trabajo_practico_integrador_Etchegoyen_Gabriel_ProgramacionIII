@@ -1,8 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap');
+
 /* Layout principal */
 .home-container {
   display: flex;
   min-height: 100vh;
   background: #f5f5f5;
+  font-family: 'DM Sans', sans-serif;
 }
 
 /* Sidebar de categorías */
@@ -17,8 +20,9 @@
 }
 
 .home-sidebar h3 {
+  font-family: 'DM Serif Display', serif;
   margin-bottom: 20px;
-  color: #333;
+  color: #1a3c2e;
   font-size: 18px;
 }
 
@@ -32,14 +36,15 @@
   cursor: pointer;
   color: #666;
   transition: color 0.2s;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .home-sidebar li:hover {
-  color: #667eea;
+  color: #b5985a;
 }
 
 .home-sidebar .active-category {
-  color: #667eea;
+  color: #b5985a;
   font-weight: bold;
 }
 
@@ -60,19 +65,33 @@
   border-radius: 12px;
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .home-header h1 {
+  font-family: 'DM Serif Display', serif;
   font-size: 24px;
-  color: #333;
+  color: #1a3c2e;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 200px;
 }
 
 .search-box input {
+  width: 100%;
   padding: 10px 15px;
-  width: 250px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #b5985a;
 }
 
 .cart-badge {
@@ -88,7 +107,7 @@
   position: absolute;
   top: -8px;
   right: -8px;
-  background: #667eea;
+  background: #2d6a4f;
   color: white;
   border-radius: 50%;
   width: 20px;
@@ -97,6 +116,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'DM Sans', sans-serif;
 }
 
 /* Grid de productos */
@@ -131,10 +151,11 @@
 }
 
 .product-name {
+  font-family: 'DM Serif Display', serif;
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 8px;
-  color: #333;
+  color: #1a3c2e;
 }
 
 .product-description {
@@ -142,22 +163,25 @@
   color: #666;
   margin-bottom: 12px;
   line-height: 1.4;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .product-price {
   font-size: 20px;
   font-weight: bold;
-  color: #667eea;
+  color: #2d6a4f;
   margin-bottom: 8px;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .product-stock {
   font-size: 12px;
   color: #999;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .product-stock.available {
-  color: #4caf50;
+  color: #40916c;
 }
 
 .product-stock.unavailable {
@@ -169,23 +193,14 @@
   margin-bottom: 20px;
   color: #666;
   font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .empty-results {
   text-align: center;
   padding: 60px;
   color: #999;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .home-sidebar {
-    display: none;
-  }
-  
-  .home-main {
-    margin-left: 0;
-  }
+  font-family: 'DM Sans', sans-serif;
 }
 
 /* Botones de navegación */
@@ -206,7 +221,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: inherit;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .nav-btn:hover {
@@ -218,35 +233,16 @@
   color: #333;
 }
 
-/* Ajuste del header */
-.home-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 15px 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.search-box {
-  flex: 1;
-  min-width: 200px;
-}
-
-.search-box input {
-  width: 100%;
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
+  .home-sidebar {
+    display: none;
+  }
+  
+  .home-main {
+    margin-left: 0;
+  }
+  
   .nav-text {
     display: none;
   }
